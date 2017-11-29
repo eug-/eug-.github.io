@@ -1,0 +1,33 @@
+.p-primes .page-label {
+  /*color: rgb(90, 30, 41);*/
+}
+.p-primes header {
+  /*background: rgba(255, 255, 245, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 1px 0 1px rgba(0,0,0,0.1);*/
+}
+.primes-container {
+  position: relative;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  -webkit-text-size-adjust: 50%;
+}
+.prime {
+  position: absolute;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  color: #fff;
+  font-size: 72px;
+  font-weight: normal;
+  border-radius: 999px;
+  letter-spacing: 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+.over {
+  z-index: 2;
+}

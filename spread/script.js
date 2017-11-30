@@ -49,6 +49,13 @@ var it = {};
  * Run this to start.
  */
 it.init = function (container, opts) {
+  if (it.container == container &&
+      it.environment && it.environment.hasOpts(opts)) {
+    if (it.wasStarted) {
+      it.start();
+    }
+    return;
+  }
   it.container = container;
   it.restart(opts);
 };
@@ -84,6 +91,7 @@ it.reset = function (opts) {
   var environment = new it.Environment(opts);
   var renderer = new it.Renderer(environment);
 
+  it.environment = environment;
   if (it.driver && it.driver.renderer) {
     it.driver.renderer.destroy();
   }
@@ -132,7 +140,6 @@ it.reset = function (opts) {
     }
   }
 };
-
 
 it.Environment = function (options) {
   // Environment defaults.
@@ -190,6 +197,19 @@ it.Environment = function (options) {
 it.Environment.prototype.getRandomColor = function() {
   var color = this.colors[Math.floor(Math.random() * this.colors.length)];
   return color;
+}
+
+it.Environment.prototype.hasOpts = function(options) {
+  for (var i in options) {
+    if (i == '_stageWidth' && this.stageWidth != options[i]) {
+      return false;
+    } else if (i == '_stageHeight' && this.stageHeight != options[i]) {
+      return false;
+    } else if (this[i] != options[i]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 
@@ -672,11 +692,9 @@ rf.registerPage(
       _offsetTop: offsetTop
     };
     it.init(frame.container, frame.opts);
-    // frame.container.addEventListener('click', showControls);
   },
   function() {
+    it.wasStarted = it.started();
     it.stop();
-    it.reset(frame.opts || {});
-    // frame.container.removeEventListener('click', showControls);
   });
 })();

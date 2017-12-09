@@ -6,7 +6,12 @@
   ];
 
   var board = document.createElement('div');
+  var plate = null;
   var img = null;
+  var currentDrag = null;
+  var dragPosition = [0,0];
+  var startPosition = [0,0];
+  var scale = 1;
 
   function initialize() {
     if (img) {
@@ -33,18 +38,52 @@
     img.data='albers/svg/' + plateName + '.svg';
   }
 
-  function processPlate(plate) {
-    var movable = plate.contentDocument.getElementsByTagName('g');
+  function processPlate(img) {
+    var content = img.contentDocument;
+    plate = content.firstChild;
+    requestAnimationFrame(function() {
+      // Wait for content to be laid out..
+      scale = plate.viewBox.baseVal.height / (1.0 * plate.height.baseVal.value);
+    });
+
+    var movable = content.getElementsByTagName('g');
     for (var i = 0; i < movable.length; i++) {
       movable[i].style.cursor = 'move';
       movable[i].addEventListener('mousedown', startDrag);
     }
     // TODO: This will need to change.
-    var colors = plate.contentDocument.getElementsByTagName('rect');
+    var colors = content.getElementsByTagName('rect');
   }
 
   function startDrag(evt) {
-    console.log(evt.target);
+    endDrag();
+    currentDrag = evt.currentTarget;
+    var transform = currentDrag.style.transform.match('(-?[\\d\\.]+)px,\\s*(-?[\\d\\.]+)px') || [0,0,0];
+    dragPosition = [Number(transform[1]), Number(transform[2])];
+    startPosition = [evt.pageX, evt.pageY];
+    currentDrag.addEventListener('mousemove', drag);
+    currentDrag.addEventListener('mouseup', endDrag);
+    currentDrag.addEventListener('mouseleave', endDrag);
+    plate.addEventListener('mouseleave', endDrag);
+  }
+
+  function drag(evt) {
+    console.log('dp', dragPosition);
+    console.log('pos', evt.pageX - startPosition[0], evt.pageY - startPosition[1]);
+    var x = dragPosition[0] + scale * (evt.pageX - startPosition[0]);
+    var y = dragPosition[1] + scale * (evt.pageY - startPosition[1]);
+    currentDrag.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  }
+
+  function endDrag() {
+    if (!currentDrag) {
+      return;
+    }
+    currentDrag.removeEventListener('mousemove', drag);
+    currentDrag.removeEventListener('mouseup', endDrag);
+    currentDrag.removeEventListener('mouseleave', endDrag);
+    plate.removeEventListener('mouseleave', endDrag);
+    currentDrag = null;
   }
 
   rf.registerPage(

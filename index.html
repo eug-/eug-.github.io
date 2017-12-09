@@ -194,7 +194,11 @@
   <script src="rf.js"></script>
   <script src="tc.js"></script>
   <script>
-    rf.setSources(['albers', 'primes', 'spread']);
+    var sources = ['primes', 'spread'];
+    if (window.location.hash.includes('albers')) {
+      sources.unshift('albers');
+    }
+    rf.setSources(sources);
   </script>
 </body>
 </html>

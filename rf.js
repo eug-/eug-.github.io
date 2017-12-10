@@ -112,4 +112,118 @@ var rf = {};
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(onresize, 500);
   });
+
+
+
+  /// DRAGGING MESS ///
+  function extractEventFromTouch(evt) {
+    return fakeEvent = {
+      target: evt.target,
+      currentTarget: evt.currentTarget,
+      clientX: evt.touches[0].clientX,
+      clientY: evt.touches[0].clientY,
+      pageX: evt.touches[0].pageX,
+      pageY: evt.touches[0].pageY
+    };
+  }
+
+  function onDragStart(dragId, evt) {
+    var dragEntry = dragRegistry[dragId];
+    if (!dragEntry) {
+      return;
+    }
+    dragEntry.onStart && dragEntry.onStart(evt);
+    var target = dragEntry.target;
+    target.addEventListener('mousemove', dragEntry.onDragMove);
+    target.addEventListener('touchmove', dragEntry.onTouchMove);
+    target.addEventListener('mouseup', dragEntry.onDragEnd);
+    target.addEventListener('mouseleave', dragEntry.onDragEnd);
+    target.addEventListener('touchend', dragEntry.onTouchEnd);
+    target.addEventListener('touchcancel', dragEntry.onTouchEnd);
+    if (dragEntry.bounds) {
+      dragEntry.bounds.addEventListener('mouseleave', dragEntry.onDragEnd);
+    }
+  };
+
+  function onTouchStart(dragId, evt) {
+    evt.preventDefault();
+    onDragStart(dragId, extractEventFromTouch(evt));
+  }
+
+  function onDragMove(dragId, evt) {
+    var dragEntry = dragRegistry[dragId];
+    if (!dragEntry) {
+      return;
+    }
+    dragEntry.onDrag && dragEntry.onDrag(evt);
+  };
+
+  function onTouchMove(dragId, evt) {
+    evt.preventDefault();
+    onDragMove(dragId, extractEventFromTouch(evt));
+  }
+
+  function onDragEnd(dragId, evt) {
+    var dragEntry = dragRegistry[dragId];
+    if (!dragEntry) {
+      return;
+    }
+    dragEntry.onEnd && dragEntry.onEnd(evt);
+    removeEndEvents(dragEntry);
+  };
+
+  function onTouchEnd(dragId, evt) {
+    evt.preventDefault();
+    onDragEnd(dragId, evt);
+  }
+
+  function removeEndEvents(dragEntry) {
+    var target = dragEntry.target;
+    target.removeEventListener('mousemove', dragEntry.onDragMove);
+    target.removeEventListener('touchmove', dragEntry.onTouchMove);
+    target.removeEventListener('mouseup', dragEntry.onDragEnd);
+    target.removeEventListener('mouseleave', dragEntry.onDragEnd);
+    target.removeEventListener('touchend', dragEntry.onTouchEnd);
+    target.removeEventListener('touchcancel', dragEntry.onTouchEnd);
+    if (dragEntry.bounds) {
+      dragEntry.bounds.removeEventListener('mouseleave', dragEntry.onDragEnd);
+    }
+  }
+
+  var dragRegistry = {};
+  var nextDragId = 0;
+
+  rf.registerDrag = function(target, bounds, onStart, onDrag, onEnd) {
+    var dragId = nextDragId++;
+    var dragEntry = {
+      target: target,
+      bounds: bounds,
+      onStart: onStart,
+      onDrag: onDrag,
+      onEnd: onEnd,
+      onDragStart: onDragStart.bind(window, dragId),
+      onTouchStart: onTouchStart.bind(window, dragId),
+      onDragMove: onDragMove.bind(window, dragId),
+      onTouchMove: onTouchMove.bind(window, dragId),
+      onDragEnd: onDragEnd.bind(window, dragId),
+      onTouchEnd: onTouchEnd.bind(window, dragId)
+    }
+    dragRegistry[dragId] = dragEntry;
+    target.addEventListener('mousedown', dragEntry.onDragStart);
+    target.addEventListener('touchstart', dragEntry.onTouchStart);
+    return dragId;
+  };
+
+  rf.unregisterDrag = function(dragId) {
+    var dragEntry = dragRegistry[dragId];
+    if (!dragEntry) {
+      return;
+    }
+    delete dragRegistry[dragId];
+    var target = dragEntry.target;
+    target.removeEventListener('mousedown', dragEntry.onDragStart);
+    target.removeEventListener('touchstart', dragEntry.onTouchStart);
+    removeEndEvents(dragEntry);
+  };
+
 })();

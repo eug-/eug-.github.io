@@ -1,7 +1,7 @@
 ;(function() {
 
   var currentPlate = null;
-  var plates = [
+  var plateNames = [
     'relativity'
   ];
 
@@ -21,7 +21,7 @@
     img.className = 'plate';
     board.className = 'board';
     board.appendChild(img);
-    showPlate(plates[0]);
+    showPlate(plateNames[0]);
   }
 
   function showPlate(plateName) {
@@ -38,9 +38,24 @@
     img.data='albers/svg/' + plateName + '.svg';
   }
 
+  function Plate(name) {
+    this.name = name;
+  }
+
+  Plate.prototype.loadPlate = function() {
+
+  }
+
   function processPlate(img) {
     var content = img.contentDocument;
     plate = content.firstChild;
+
+    var link = content.createElementNS("http://www.w3.org/1999/xhtml", "link");
+    link.setAttribute("href", "styles.css");
+    link.setAttribute("type", "text/css");
+    link.setAttribute("rel", "stylesheet");
+    plate.appendChild(link);
+
     requestAnimationFrame(function() {
       // Wait for content to be laid out..
       scale = plate.viewBox.baseVal.height / (1.0 * plate.height.baseVal.value);
@@ -48,8 +63,7 @@
 
     var movable = content.getElementsByTagName('g');
     for (var i = 0; i < movable.length; i++) {
-      movable[i].style.cursor = 'move';
-      movable[i].addEventListener('mousedown', startDrag);
+      rf.registerDrag(movable[i], plate, startDrag, drag, endDrag);
     }
     // TODO: This will need to change.
     var colors = content.getElementsByTagName('rect');
@@ -61,10 +75,6 @@
     var transform = currentDrag.style.transform.match('(-?[\\d\\.]+)px,\\s*(-?[\\d\\.]+)px') || [0,0,0];
     dragPosition = [Number(transform[1]), Number(transform[2])];
     startPosition = [evt.pageX, evt.pageY];
-    currentDrag.addEventListener('mousemove', drag);
-    currentDrag.addEventListener('mouseup', endDrag);
-    currentDrag.addEventListener('mouseleave', endDrag);
-    plate.addEventListener('mouseleave', endDrag);
   }
 
   function drag(evt) {
@@ -79,10 +89,6 @@
     if (!currentDrag) {
       return;
     }
-    currentDrag.removeEventListener('mousemove', drag);
-    currentDrag.removeEventListener('mouseup', endDrag);
-    currentDrag.removeEventListener('mouseleave', endDrag);
-    plate.removeEventListener('mouseleave', endDrag);
     currentDrag = null;
   }
 

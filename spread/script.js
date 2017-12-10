@@ -100,20 +100,18 @@ it.reset = function (opts) {
   renderer.attach();
 
   it.driver = new it.Driver(environment, renderer);
-  var colorDrop = function(evt, first) {
+  function firstDrop(evt) {
+    colorDrop(evt, true);
+  }
+  function colorDrop(evt, first) {
     //it.driver.colorDrop(
     it.driver.toggleWall(
       evt.clientX - environment._offsetLeft,
       evt.clientY - environment._offsetTop,
       first);
   }
-  renderer.addEventListener('mousedown', function(evt) {
-    colorDrop(evt, true);
-    renderer.addEventListener('mousemove', colorDrop);
-  });
-  renderer.addEventListener('mouseup', function() {
-    renderer.removeEventListener('mousemove', colorDrop);
-  });
+  rf.registerDrag(renderer, null /* bounds */, firstDrop, colorDrop, function() {});
+
   renderer.addEventListener('imagedrop', function(evt) {
     var img = evt.detail;
     var canvas = document.createElement('canvas');

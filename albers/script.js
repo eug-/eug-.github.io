@@ -66,7 +66,7 @@
       rf.registerDrag(movable[i], plate, startDrag, drag, endDrag);
     }
     // TODO: This will need to change.
-    var colors = content.getElementsByTagName('rect');
+    // var colors = content.getElementsByTagName('rect');
   }
 
   function startDrag(evt) {
@@ -78,8 +78,6 @@
   }
 
   function drag(evt) {
-    console.log('dp', dragPosition);
-    console.log('pos', evt.pageX - startPosition[0], evt.pageY - startPosition[1]);
     var x = dragPosition[0] + scale * (evt.pageX - startPosition[0]);
     var y = dragPosition[1] + scale * (evt.pageY - startPosition[1]);
     currentDrag.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
@@ -92,12 +90,5 @@
     currentDrag = null;
   }
 
-  rf.registerPage(
-    'albers',
-    board,
-    function() {
-      initialize();
-    },
-    function() {
-    });
+  rf.registerPage('albers', board, {onShow: initialize, hideHeader: true});
 })();

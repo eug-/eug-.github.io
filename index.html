@@ -4,7 +4,7 @@
   <title>rubber flat</title>
 	<link rel="shortcut icon" href="favicon.png">
 	<link rel="apple-touch-icon" href="favicon_128.png">
-  <link href='//fonts.googleapis.com/css?family=Fauna+One|Material+Icons' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Fauna+One|Material+Icons' rel='stylesheet' type='text/css'>
   <meta charset="UTF-8">
   <meta name="theme-color" content="#333333">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,6 +51,7 @@
       text-align: center;
       vertical-align: bottom;
       z-index: 1;
+      transition-delay: -1s;
     }
 
     footer {
@@ -121,9 +122,6 @@
         font-size: 22px;
         letter-spacing: 3px;
       }
-      footer {
-        font-size: 12px;
-      }
     }
 
       body.small {
@@ -150,6 +148,13 @@
         overflow: hidden;
         display: inline-block;
         transform: translate(-50%, 0);
+        transition: 1.15s ease-out;
+        transition-delay: -1s;
+      }
+      .small.hide-header header {
+        transform: translate(-50%, -300px);
+        transition: 0.65s ease-in;
+        transition-delay: 0s;
       }
       .small footer {
         height: auto;

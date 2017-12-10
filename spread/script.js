@@ -648,10 +648,7 @@ function showControls() {
   // controls.style.display = 'block';
 };
 
-rf.registerPage(
-  'spread',
-  frame.container,
-  function() {
+function onShow() {
     createBasicControls();
     frame.controls.innerHTML = '';
 
@@ -690,9 +687,15 @@ rf.registerPage(
       _offsetTop: offsetTop
     };
     it.init(frame.container, frame.opts);
-  },
-  function() {
+  };
+
+rf.registerPage('spread', frame.container, {
+  hideHeader: true,
+  onShow: onShow,
+  onHide: function() {
     it.wasStarted = it.started();
     it.stop();
-  });
+  }
+});
+
 })();

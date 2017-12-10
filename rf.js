@@ -46,12 +46,13 @@ var rf = {};
       document.head.appendChild(style);
   }
 
-  rf.registerPage = function(id, view, onShow, onHide) {
+  rf.registerPage = function(id, view, opts) {
     pageIds.push(id);
     pages[id] = {
       view: view,
-      onShow: onShow,
-      onHide: onHide
+      onShow: opts.onShow,
+      onHide: opts.onHide,
+      hideHeader: opts.hideHeader
     };
 
     if (!currentPage) {
@@ -67,8 +68,9 @@ var rf = {};
     var page = pages[id];
 
     if (currentPage) {
-      pages[currentPage].onHide();
+      pages[currentPage].onHide && pages[currentPage].onHide();
       document.body.classList.remove('p-' + currentPage);
+      clearTimeout(pages[currentPage].pending);
     }
 
     document.body.classList.add('p-' + id);
@@ -80,6 +82,12 @@ var rf = {};
     main.appendChild(page.view);
     setTimeout(page.onShow, 50);
 
+    document.body.classList.remove('hide-header');
+    if (page.hideHeader) {
+      page.pending = setTimeout(function() {
+        document.body.classList.add('hide-header');
+      }, 1500);
+    }
     currentPage = id;
   }
 

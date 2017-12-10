@@ -123,17 +123,16 @@
     timeout = setTimeout(checkScrollOffset, SCROLL_TIMEOUT);
   };
 
-  rf.registerPage(
-    'primes',
-    container,
-    function() {
+  rf.registerPage('primes', container, {
+    onShow: function() {
       if (!lastPrime) {
         addPrime(2);
       }
       checkScrollOffset();
       window.addEventListener('scroll', scrollListener);
     },
-    function() {
+    onHide: function() {
       window.removeEventListener('scroll', scrollListener);
-    });
+    }
+  });
 })();

@@ -1,0 +1,16 @@
+.p-pixt .page-label {
+  /*color: rgb(90, 30, 41);*/
+}
+.p-pixt header {
+  /*background: rgba(255, 255, 245, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 1px 0 1px rgba(0,0,0,0.1);*/
+}
+.pixt-container {
+  position: relative;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  -webkit-text-size-adjust: 50%;
+}

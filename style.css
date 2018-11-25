@@ -72,16 +72,47 @@ main {
   box-sizing: border-box;
 }
 
-.rf-logo {
-  font-family: 'Fauna One', serif;
-  padding: 0;
+aside {
+  background: rgba(245, 243, 240, 0.96);
+  border: 1px solid #ccc;
+  padding: 6px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  max-width: 30%;
+}
+
+aside h1 {
+  border-bottom: 1px solid #ccc;
+  color: #424140;
+  font-size: 18px;
+  font-weight: normal;
+  line-height: 1.2;
+  margin: 0 auto 4px;
+  padding-bottom: 4px;
+}
+
+aside p {
+  color: #525150;
+  font-size: 14px;
+  line-height: 1.2;
   margin: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.rf-logo {
+  bottom: 8px;
+  font-family: 'Fauna One', serif;
   font-size: 30px;
+  left: 0;
   letter-spacing: 4px;
   line-height: 1;
+  margin: 0;
+  padding: 0;
   position: absolute;
-  bottom: 8px;
-  left: 0;
   right: 0;
 }
 
@@ -145,6 +176,16 @@ body.small {
   transform: translate(-50%, -300px);
   transition: 0.65s ease-in;
   transition-delay: 0s;
+}
+.small aside {
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  max-width: 100%;
 }
 .small footer {
   height: auto;

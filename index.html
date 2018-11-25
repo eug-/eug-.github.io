@@ -27,13 +27,12 @@
   <script src="tc.js"></script>
   <script>
     var sources = ['primes', 'spread'];
-    ['albers', 'pixt'].forEach(function (dev) {
+    ['albers', 'atoi'].forEach(function (dev) {
       if (window.location.hash.includes(dev)) {
         sources.unshift(dev);
       }
     });
-
-    rf.setSources(sources);
+    rf.addSources(sources);
   </script>
 </body>
 </html>

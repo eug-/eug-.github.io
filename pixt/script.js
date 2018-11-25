@@ -147,21 +147,6 @@
 
 
 ;(function() {
-function createElement(type, className, parent) {
-  var element = document.createElement(type);
-  element.className = className;
-  if (parent) {
-    parent.appendChild(element);
-  }
-  return element;
-}
-function createButton(type, hint, parent) {
-  var button = createElement('span', 'rf-ui-button', parent);
-  button.setAttribute('title', hint);
-  var icon = createElement('i', 'material-icons', button);
-  icon.innerText = type;
-  return button;
-}
 
 var container = createElement('div', 'pixt-container');
 var stage = createElement('canvas', 'pixt-canvas', container);

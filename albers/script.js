@@ -1,94 +1,107 @@
-;(function() {
-
-  var currentPlate = null;
-  var plateNames = [
-    'relativity'
-  ];
-
-  var board = document.createElement('div');
-  var plate = null;
-  var img = null;
-  var currentDrag = null;
-  var dragPosition = [0,0];
-  var startPosition = [0,0];
-  var scale = 1;
-
-  function initialize() {
-    if (img) {
-      return;
-    }
-    img = document.createElement('object');
-    img.className = 'plate';
-    board.className = 'board';
-    board.appendChild(img);
-    showPlate(plateNames[0]);
+class AlbersPage extends Page {
+  constructor() {
+    super('albers');
+    this.hideHeader = true;
+    this.currentPlate = null;
+    this.plates = [new AlbersPlate('relativity')];
   }
 
-  function showPlate(plateName) {
-    if (plateName == currentPlate) {
-      return;
+  getContainer() {
+    if (!this.board) {
+      this.board = this.createPageElement('div', 'board');
+      this.img = this.createPageElement('object', 'plate', this.board);
     }
-    currentPlate = plateName;
-    img.addEventListener('load', function(){
-      if (plateName != currentPlate) {
-        return;
-      }
-      processPlate(img);
-    });
-    img.data='albers/svg/' + plateName + '.svg';
+    return this.board;
   }
 
-  function Plate(name) {
+  onShow() {
+    super.onShow();
+    this.showPlate(this.plates[0]);
+  }
+
+  showPlate(plate) {
+    if (this.currentPlate === plate) {
+      return;
+    }
+    if (this.currentPlate) {
+      this.currentPlate.stop();
+    }
+    plate.load(this.img);
+    this.currentPlate = plate;
+  }
+}
+
+class AlbersPlate {
+  constructor(name) {
     this.name = name;
+    this.currentDrag = null;
+    this.dragRegisters = [];
+    this.dragPosition = [0, 0];
+    this.scale = 1;
+    this.startPosition = [0, 0];
+    this.onLoaded = () => {
+      this.processPlate();
+    };
   }
 
-  Plate.prototype.loadPlate = function() {
-
+  load(imageElement) {
+    this.image = imageElement;
+    imageElement.addEventListener('load', this.onLoaded);
+    imageElement.data = 'albers/svg/' + this.name + '.svg'
   }
 
-  function processPlate(img) {
-    var content = img.contentDocument;
-    plate = content.firstChild;
+  stop() {
+    if (this.image) {
+      this.image.removeEventListener('load', this.onLoaded);
+      this.image = null;
+    }
+    while (this.dragRegisters.length > 0) {
+      rf.dragRegistry.remove(this.dragRegisters.pop());
+    }
+    this.endDrag();
+  }
 
-    var link = content.createElementNS("http://www.w3.org/1999/xhtml", "link");
+  processPlate() {
+    if (!this.image) {
+      return;
+    }
+    const content = this.image.contentDocument;
+    const plate = content.firstChild;
+    const link = content.createElementNS("http://www.w3.org/1999/xhtml", "link");
     link.setAttribute("href", "styles.css");
     link.setAttribute("type", "text/css");
     link.setAttribute("rel", "stylesheet");
     plate.appendChild(link);
-
-    requestAnimationFrame(function() {
+    requestAnimationFrame(() => {
       // Wait for content to be laid out..
-      scale = plate.viewBox.baseVal.height / (1.0 * plate.height.baseVal.value);
+      this.scale = plate.viewBox.baseVal.height / (1.0 * plate.height.baseVal.value);
     });
-
-    var movable = content.getElementsByTagName('g');
+    const movable = content.getElementsByTagName('g');
     for (var i = 0; i < movable.length; i++) {
-      rf.registerDrag(movable[i], plate, startDrag, drag, endDrag);
+      rf.dragRegistry.add(movable[i], plate, this.startDrag.bind(this), this.drag.bind(this), this.endDrag.bind(this));
     }
-    // TODO: This will need to change.
-    // var colors = content.getElementsByTagName('rect');
   }
 
-  function startDrag(evt) {
-    endDrag();
-    currentDrag = evt.currentTarget;
-    var transform = currentDrag.style.transform.match('(-?[\\d\\.]+)px,\\s*(-?[\\d\\.]+)px') || [0,0,0];
-    dragPosition = [Number(transform[1]), Number(transform[2])];
-    startPosition = [evt.pageX, evt.pageY];
+  startDrag(evt) {
+    this.endDrag();
+    this.currentDrag = evt.currentTarget;
+    const transform = this.currentDrag.style.transform.match('(-?[\\d\\.]+)px,\\s*(-?[\\d\\.]+)px') || [0, 0, 0];
+    this.dragPosition = [Number(transform[1]), Number(transform[2])];
+    this.startPosition = [evt.pageX, evt.pageY];
   }
 
-  function drag(evt) {
-    var x = dragPosition[0] + scale * (evt.pageX - startPosition[0]);
-    var y = dragPosition[1] + scale * (evt.pageY - startPosition[1]);
-    currentDrag.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  drag(evt) {
+    const x = this.dragPosition[0] + this.scale * (evt.pageX - this.startPosition[0]);
+    const y = this.dragPosition[1] + this.scale * (evt.pageY - this.startPosition[1]);
+    this.currentDrag.style.transform = `translate(${x}px, ${y}px)`;
   }
 
-  function endDrag() {
-    if (!currentDrag) {
+  endDrag() {
+    if (!this.currentDrag) {
       return;
     }
-    currentDrag = null;
+    this.currentDrag = null;
   }
+}
 
-  rf.registerPage('albers', board, {onShow: initialize, hideHeader: true});
-})();
+rf.pageViewer.registerPage(new AlbersPage());

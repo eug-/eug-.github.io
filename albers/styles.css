@@ -1,4 +1,4 @@
-.board {
+.albers-board {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -6,7 +6,7 @@
   top: 0;
 }
 
-.plate {
+.albers-plate {
   max-height: 100%;
   max-width: 100%;
 }

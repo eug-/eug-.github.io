@@ -1,0 +1,56 @@
+.lswap-container {
+  overflow-y: scroll;
+  text-align: center;
+}
+
+.lswap-word,
+.lswap-static-word {
+  display: inline-block;
+  font-size: 85px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.lswap-letter {
+  position: relative;
+}
+
+.lswap-letter {
+  display: inline-block;
+}
+
+.lswap-part {
+  left: 0;
+  width: 100%;
+}
+
+.lswap-static-word .lswap-part {
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+}
+
+.lswap-static-word .lswap-part.i-0 {
+  color: #f11660;
+}
+.lswap-static-word .lswap-part.i-1 {
+  color: #94a381;
+}
+.lswap-static-word .lswap-part.i-2 {
+  color: #e6c31c;
+}
+
+.lswap-word .lswap-part {
+  opacity: .1;
+  -webkit-transition: opacity 5s;
+  transition: opacity 5s;
+}
+
+.s-0 .lswap-word .i-0,
+.s-1 .lswap-word .i-1,
+.s-2 .lswap-word .i-2 {
+  opacity: 1;
+}
+
+.c-i.g-it {
+  text-align: center;
+}

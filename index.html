@@ -26,12 +26,15 @@
   <script src="rf.js"></script>
   <script src="tc.js"></script>
   <script>
-    var sources = ['primes', 'spread'];
-    ['albers', 'atoi'].forEach(function (dev) {
-      if (window.location.hash.includes(dev)) {
-        sources.unshift(dev);
+    let sources = ['primes', 'spread'];
+    let first = '';
+    for (let beta of ['albers', 'pixt']) {
+      if (window.location.hash.includes(beta)) {
+        sources.unshift(beta);
+        first = beta;
       }
-    });
+    }
+    rf.pageViewer.first = first;
     rf.addSources(sources);
   </script>
 </body>

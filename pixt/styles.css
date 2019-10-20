@@ -7,10 +7,16 @@
   box-shadow: 1px 0 1px rgba(0,0,0,0.1);*/
 }
 .pixt-container {
-  position: relative;
+  -webkit-text-size-adjust: 50%;
   font-family: sans-serif;
+  height: 100%;
   margin: 0;
   padding: 0;
+  position: relative;
   text-align: center;
-  -webkit-text-size-adjust: 50%;
+  width: 100%;
+}
+.pixt-canvas {
+  height: 100%;
+  width: 100%;
 }

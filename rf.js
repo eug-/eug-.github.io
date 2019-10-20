@@ -51,6 +51,7 @@ class Page {
 
 class PageViewer {
   constructor() {
+    this.first = '';
     this.current = null;
     this.pages = [];
     this.headerTimeout = 0;
@@ -78,7 +79,7 @@ class PageViewer {
 
   registerPage(page) {
     this.pages.push(page);
-    if (!this.current) {
+    if (!this.current && (!this.first || this.first == page.id)) {
       this.setPage(page);
     }
   }
@@ -267,9 +268,13 @@ const rf = {
   },
 
   loadFontCss: (...fonts) => {
+    rf.loadFontArrayCss(fonts);
+  },
+
+  loadFontArrayCss: (fonts) => {
     const fontString = fonts.join('|')
-      .replace(' ', '+');
-    rf.loadCss(`http://fonts.googleapis.com/css?family=${fontList}`);
+      .replace(/\s/g, '+');
+    rf.loadCss(`https://fonts.googleapis.com/css?family=${fontString}`);
   },
 
   dragRegistry: new DragRegistry(),

@@ -869,7 +869,11 @@ window.jscolor || (window.jscolor = function() {
       var ctx = this.canvas.getContext('2d');
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       ctx.drawImage(this.image, source.x, source.y, source.width, source.height, 0, 0, canvasWidth, canvasHeight);
-      this.imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+      this.imageData = ctx.createImageData(canvasWidth, canvasHeight);
+      const data = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+      for (let i = 0; i < data.data.length; i++) {
+        this.imageData.data[i] = data.data[i];
+      }
       if (this.onImageLoaded) {
         this.onImageLoaded(this.imageData);
       }
@@ -877,8 +881,10 @@ window.jscolor || (window.jscolor = function() {
   }
 
   class Letterizer {
-    constructor(canvas) {
+    constructor(canvas, fonts) {
+      this.fonts = fonts;
       this.canvas = canvas;
+      this.tmpCanvas = document.createElement('canvas');
       this.context = canvas.getContext('2d');
       this.cache = {};
       this.layout = {
@@ -894,7 +900,9 @@ window.jscolor || (window.jscolor = function() {
     process(imageData, string) {
       this.context.textAlign = 'center';
       this.context.textBaseline = 'middle';
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.fillStyle = 'white';
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.fillStyle = 'black';
       const length = string.length;
       const ratio = this.canvas.width / this.canvas.height;
       while (this.layout.width * this.layout.height < length) {
@@ -906,11 +914,29 @@ window.jscolor || (window.jscolor = function() {
       }
       this.layout.cellWidth = this.canvas.width / this.layout.width;
       this.layout.cellHeight = this.canvas.height / this.layout.height;
+      this.tmpCanvas.width = this.layout.cellWidth;
+      this.tmpCanvas.height = this.layout.cellHeight;
+      const fontSize = `${this.layout.cellHeight}px`;
 
       for (let y = 0; y < this.layout.height; y++) {
         for (let x = 0; x < this.layout.width; x++) {
           const char = string.charAt(y * this.layout.width + x);
           if (char) {
+            if (char == ' ') {
+              continue;
+            }
+
+            let best = '';
+            let diff = 0;
+            for (const font of this.fonts) {
+              const fontStyle = `${fontSize} ${font.replace(/ /g, '')}`;
+              const currentDiff = this.diff(fontStyle, char, imageData, x, y);
+              if (currentDiff > diff) {
+                best = fontStyle;
+                diff = currentDiff;
+              }
+            }
+            this.context.font = best;
             this.context.fillText(
               char,
               (x + .5) * this.layout.cellWidth,
@@ -919,28 +945,57 @@ window.jscolor || (window.jscolor = function() {
           }
         }
       }
+      // this.context.putImageData(imageData);
     }
 
-    diffLetter(letter, fontString) {
-      const key = letter + '_' + fontString;
-      const letterData = this.cache[key];
-      if (!letterData) {
-        const ctx = this.context;
+    diff(fontStyle, letter, imageData, x, y) {
+      const ctx = this.tmpCanvas.getContext('2d');
+      const width = this.tmpCanvas.width;
+      const height = this.tmpCanvas.height;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = 'black';
+      ctx.font = fontStyle;
+      ctx.fillText(letter, width / 2, height / 2, width);
 
+      return this.countCommonPixels(
+        ctx.getImageData(0, 0, width, height), imageData, x, y);
+    }
+
+    countCommonPixels(fontData, imageData, imgX, imgY) {
+      let commons = 0;
+      const offsetX = imgX * fontData.width;
+      const offsetY = imgY * fontData.height;
+      for (let y = 0; y < fontData.height; y += 4) {
+        for (let x = 0; x < fontData.width; x += 4) {
+          const img = this.getValueAtPixel(imageData, x + offsetX, y + offsetY);
+          const font = this.getValueAtPixel(fontData, x, y);
+          if (Math.abs(img - font) <= 100) {
+            commons += 1;
+          }
+        }
       }
+      return commons;
+    }
+
+    getValueAtPixel(imgData, x, y) {
+      const red = 4 * (x + (y * imgData.width));
+      return imgData.data[red];
     }
   }
 
   class PixtPage extends Page {
     constructor() {
       super('pixt');
+      this.fonts = ['Ultra', 'Monoton', 'Cormorant', 'Zilla Slab Highlight', 'Nixie One'];
     }
 
     getContainer() {
       if (!this.continer) {
+        rf.loadFontArrayCss(this.fonts);
         this.container = this.createPageElement('div', 'container');
         this.imageStage = this.createPageElement('canvas', 'canvas', this.container);
-        this.letterizer = new Letterizer(this.imageStage);
+        this.letterizer = new Letterizer(this.imageStage, this.fonts);
         this.imageLoader = new Loader(this.imageStage, (imageData) => {
           this.imageLoader.reset();
           this.letterizer.process(imageData, this.text);
@@ -965,6 +1020,10 @@ window.jscolor || (window.jscolor = function() {
       this.imageStage.height = Math.floor(this.imageStage.offsetHeight * this.pixelRatio);
       this.imageLoader.initialize();
       this.text = 'Add text to make the image come through. The longer the text string, the better the image resolution ends up being.';
+      this.text += this.text;
+      this.text += this.text;
+      this.text += this.text;
+      this.text += this.text;
     }
 
     onHide() {

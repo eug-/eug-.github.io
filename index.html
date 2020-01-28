@@ -28,7 +28,7 @@
   <script>
     let sources = ['primes', 'spread'];
     let first = '';
-    for (let beta of ['albers', 'pixt']) {
+    for (let beta of ['albers', 'pixt', 'ssplit']) {
       if (window.location.hash.includes(beta)) {
         sources.unshift(beta);
         first = beta;

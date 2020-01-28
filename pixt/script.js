@@ -929,7 +929,7 @@ window.jscolor || (window.jscolor = function() {
             let best = '';
             let diff = 0;
             for (const font of this.fonts) {
-              const fontStyle = `${fontSize} ${font.replace(/ /g, '')}`;
+              const fontStyle = `100 ${fontSize} ${font}`;
               const currentDiff = this.diff(fontStyle, char, imageData, x, y);
               if (currentDiff > diff) {
                 best = fontStyle;
@@ -984,22 +984,28 @@ window.jscolor || (window.jscolor = function() {
     }
   }
 
+  const FONTS = {
+    'Codystar': 'CodystarRegular',
+  };
+
   class PixtPage extends Page {
     constructor() {
       super('pixt');
-      this.fonts = ['Ultra', 'Monoton', 'Cormorant', 'Zilla Slab Highlight', 'Nixie One'];
     }
 
     getContainer() {
       if (!this.continer) {
-        rf.loadFontArrayCss(this.fonts);
         this.container = this.createPageElement('div', 'container');
         this.imageStage = this.createPageElement('canvas', 'canvas', this.container);
-        this.letterizer = new Letterizer(this.imageStage, this.fonts);
-        this.imageLoader = new Loader(this.imageStage, (imageData) => {
-          this.imageLoader.reset();
-          this.letterizer.process(imageData, this.text);
-        });
+        rf.loadFontArrayCss(Object.keys(FONTS));
+        setTimeout(() => {
+          this.letterizer = new Letterizer(this.imageStage, Object.values(FONTS));
+          this.imageLoader = new Loader(this.imageStage, (imageData) => {
+            this.imageLoader.reset();
+            this.letterizer.process(imageData, this.text);
+          });
+          this.imageLoader.initialize();
+        }, 50);
 
         const ctx = this.imageStage.getContext('2d');
         this.pixelRatio =
@@ -1018,7 +1024,9 @@ window.jscolor || (window.jscolor = function() {
       super.onShow();
       this.imageStage.width = Math.floor(this.imageStage.offsetWidth * this.pixelRatio);
       this.imageStage.height = Math.floor(this.imageStage.offsetHeight * this.pixelRatio);
-      this.imageLoader.initialize();
+      if (this.imageLoader) {
+        this.imageLoader.initialize();
+      }
       this.text = 'Add text to make the image come through. The longer the text string, the better the image resolution ends up being.';
       this.text += this.text;
       this.text += this.text;

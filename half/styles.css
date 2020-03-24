@@ -1,0 +1,12 @@
+.half-container {
+  position: relative;
+  font-family: sans-serif;
+  margin: 0 0 50px;
+  padding: 0;
+  text-align: center;
+  -webkit-text-size-adjust: 50%;
+}
+
+.half-left, .half-right {
+  display: inline-block;
+}

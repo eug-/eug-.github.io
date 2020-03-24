@@ -251,12 +251,16 @@ const rf = {
   addSources: (sources) => {
     for (let i = 0; i < sources.length; i++) {
       const source = sources[i].replace(/([^a-z])*/g, '');
-      rf.loadCss(source + '/styles.css');
-
-      const script = document.createElement('script');
-      script.setAttribute('src', source + '/script.js');
-      document.body.appendChild(script);
+      rf.loadCss(`${source}/styles.css`);
+      rf.loadScript(`${source}/script.js`);
     }
+  },
+
+  loadScript: (source, onload = () => {}) => {
+    const script = document.createElement('script');
+    script.setAttribute('src', source);
+    script.onload = onload;
+    document.body.appendChild(script);
   },
 
   loadCss: (source) => {

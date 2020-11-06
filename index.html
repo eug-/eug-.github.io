@@ -26,9 +26,9 @@
   <script src="rf.js"></script>
   <script src="tc.js"></script>
   <script>
-    let sources = ['primes', 'spread'];
+    let sources = ['plygn', 'primes', 'spread'];
     let first = '';
-    for (let beta of ['albers', 'pixt', 'ssplit', 'half', 'plygn']) {
+    for (let beta of ['albers', 'pixt', 'ssplit', 'half']) {
       if (window.location.hash.includes(beta)) {
         sources.unshift(beta);
         first = beta;

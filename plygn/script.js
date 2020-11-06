@@ -63,18 +63,17 @@
 
     draw(timestamp, delta) {
       if (this.emptyFrame == 0) {
-        this.sides = Math.floor((Math.random() * 3)) + 6;
+        this.sides = Math.floor((Math.random() * 4)) + 5;
       }
       if (this.emptyFrame % 3 == 1) {
         this.context.clearRect(0, 0, this.width, this.height);
         for (let row = 0; row < this.rows; row++) {
           for (let col = 0; col < this.cols; col++) {
-
             drawPolygon(col * this.elSize, row * this.elSize, this.elSize, this.context, this.sides, this.emptyFrame, Math.max(1, delta + row * 50 + col * 10));
           }
         }
       }
-      this.emptyFrame = (this.emptyFrame + 1) % 23;
+      this.emptyFrame = (this.emptyFrame + 1) % 53;
     }
 
     getContainer() {

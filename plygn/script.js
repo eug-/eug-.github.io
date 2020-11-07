@@ -100,8 +100,10 @@
       this.stop = false;
       this.lastTimestamp = (new Date())
         .getTime();
-      this.resize();
       window.requestAnimationFrame(this.step);
+      window.requestAnimationFrame(() => {
+        this.resize();
+      });
     }
 
     onHide() {

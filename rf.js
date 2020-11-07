@@ -251,8 +251,9 @@ const rf = {
   addSources: (sources) => {
     for (let i = 0; i < sources.length; i++) {
       const source = sources[i].replace(/([^a-z])*/g, '');
-      rf.loadCss(`${source}/styles.css`);
-      rf.loadScript(`${source}/script.js`);
+      rf.loadCss(`${source}/styles.css`, () => {
+        rf.loadScript(`${source}/script.js`);
+      });
     }
   },
 
@@ -263,11 +264,12 @@ const rf = {
     document.body.appendChild(script);
   },
 
-  loadCss: (source) => {
+  loadCss: (source, onComplete) => {
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
     style.setAttribute('type', 'text/css');
     style.setAttribute('href', source);
+    style.addEventListener('load', onComplete);
     document.head.appendChild(style);
   },
 

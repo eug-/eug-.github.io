@@ -26,12 +26,20 @@
   <script src="rf.js"></script>
   <script src="tc.js"></script>
   <script>
-    let sources = ['plygn', 'primes', 'spread'];
+    const sources = ['plygn', 'primes', 'spread'];
+    const beta = ['albers', 'pixt', 'ssplit', 'half'];
     let first = '';
-    for (let beta of ['albers', 'pixt', 'ssplit', 'half']) {
-      if (window.location.hash.includes(beta)) {
-        sources.unshift(beta);
-        first = beta;
+    for (let id of sources) {
+          if (window.location.hash.includes(id) && !first) {
+            id = beta;
+          }
+        }
+    for (let id of beta) {
+      if (window.location.hash.includes(id)) {
+        sources.unshift(id);
+        if (!first) {
+          first = id;
+        }
       }
     }
     rf.pageViewer.first = first;

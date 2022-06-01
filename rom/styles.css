@@ -1,0 +1,22 @@
+.rom-container {
+  text-align: center;
+  padding: 100px;
+}
+
+.rom-input, .rom-input:active, .rom-input:focus {
+  background: #ddd;
+  border: 5px solid #ddd;
+  color: #999;
+  font-size: 30px;
+  margin: 10px auto;
+  min-width: 200px;
+  text-align: center;
+  width: 50%;
+  outline: none !important;
+}
+
+.rom-output {
+  margin: 10px 0;
+  font-size: 40px;
+  word-break: break-all;
+}

@@ -1,0 +1,41 @@
+.cards-container {
+  position: relative;
+  font-family: sans-serif;
+  padding: 20px 0 120px 0;
+  text-align: center;
+  -webkit-text-size-adjust: 50%;
+}
+
+.small .cards-container {
+  padding-top: 120px;
+}
+
+.cards-container .card {
+  width: 60px;
+}
+
+.cards-container.magnify .card {
+  width: 200px;
+}
+
+.cards-container .size-button {
+  position: fixed;
+  padding: 10px;
+  top: 83px;
+  left: 50%;
+  margin-left: 120px;
+  z-index: 10;
+  background: #eee;
+  border: 1px solid #666;
+}
+
+.small .cards-container .size-button {
+  top: 16px;
+  left: 50%;
+  margin-left: 80px;
+}
+
+.cards-container .size-button:hover {
+  cursor: pointer;
+  background: #ccc;
+}

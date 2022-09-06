@@ -15,9 +15,11 @@
       if (!this.container) {
         this.container = this.createPageElement('div', 'container');
 
-        for (let i = 1; i < 14; i++) {
-          for (let s of ['s', 'c', 'h', 'd']) {
-            this.container.appendChild(this.getImg(`${i}_${s}`));
+        for (let i = 14; i > 1; i--) {
+          const types = (i < 11) ? ['h', 's'] : ['s', 'c', 'h', 'd'];
+          const num = i < 14 ? i : 1;
+          for (let s of types) {
+            this.container.appendChild(this.getImg(`${num}_${s}`));
           }
         }
         this.container.appendChild(this.getImg('back'));

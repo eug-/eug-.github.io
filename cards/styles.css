@@ -12,6 +12,7 @@
 
 .cards-container .card {
   width: 60px;
+  border: 1px solid #333;
 }
 
 .cards-container.magnify .card {
